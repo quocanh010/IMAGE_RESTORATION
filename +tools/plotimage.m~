@@ -1,0 +1,15 @@
+function h = plotimage(ima, range)
+
+[~, ~, K] = size(ima);
+h = imagesc(ima);
+axis image;
+axis off;
+if exist('range', 'var')
+    caxis(range);
+end
+if K == 1
+    colormap(gray(1024));
+end
+if nargout < 1
+    clear h;
+end
