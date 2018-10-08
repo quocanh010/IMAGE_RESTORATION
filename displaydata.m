@@ -2,23 +2,193 @@ close all;
 clear all;
 
 import tools.*
-
+radius_u = 1;
+radius_n = 2;
+radius_o = 3;
+sigmaw = 20;
 % Load data
 data = loaddata();
 [n1, n2, T] = size(data);
+x = data(:, :, 1);
+y_osf_u = median_filter(x, radius_u);
+y_aheat_u = Anisotropic_defusion(x,20,0.99);
+y_bilateral_u = bilateral(x,5,10);
 
+y_osf_n = median_filter(x, radius_n);
+y_aheat_n = Anisotropic_defusion(x,20,0.99*5);
+y_bilateral_n = bilateral(x,5,15);
+
+y_osf_o = median_filter(x, radius_o);
+y_aheat_o = Anisotropic_defusion(x,20,0.99*10);
+y_bilateral_o = bilateral(x,5,22);
 % Display data
-h = fancyfigure;
-for k = 1:T
-    subplot(131);
-    plotimage(abs(data(:, :, k)), [0 255]);
-    title('Magnitude image');
-    subplot(132);
-    plotimage(angle(data(:, :, k)));
-    title('Phase image');
-    subplot(133);
-    plotimage(data(:, :, k));
-    title('Complex image');
+fancyfigure;
+    
+    subplot(3,3,1);
+    plotimage(y_osf_u, [0 255]);
+    title('Under_smooth Median Filtered Magnitude image');
+    subplot(3,3,2);
+    plotimage(y_aheat_u, [0 255]);
+    title('Under_smooth Anisotropic diffusion Filtered Magnitude image');
+    subplot(3,3,3);
+    plotimage(y_bilateral_u, [0 255]);
+    title('Under_smooth Bilateral Fitered Magnitude image');
+    
+    
+    
+    subplot(3,3,4);
+    plotimage(y_osf_n, [0 255]);
+    title('Mid_smooth Median Filtered Magnitude image');
+    subplot(3,3,5);
+    plotimage(y_aheat_n, [0 255]);
+    title('Mid_smooth Anisotropic Diffusion Filtered Magnitude image');
+    subplot(3,3,6);
+    plotimage(y_bilateral_n, [0 255]);
+    title('Mid_smooth Bilateral Fitered Mag image');
+    
+    
+    
+    subplot(3,3,7);
+    plotimage(y_osf_o, [0 255]);
+    title('Over_smooth Median Filtered  image');
+    subplot(3,3,8);
+    plotimage(y_aheat_o, [0 255]);
+    title('Over_smooth Anisotropic diffusion Filtered  image');
+    subplot(3,3,9);
+    plotimage(y_bilateral_o, [0 255]);
+    title('Over_smooth Bilateral Fitered Mag image');
     drawnow
-    pause(0.01);
-end
+   % pause(0.01)
+    linkaxes
+    
+    
+random = loadimage('lake.png');
+y_noise = imnoise(random, 'gaussian', 'sigma', 10);    
+y_osf_u = median_filter(random, radius_u);
+y_aheat_u = Anisotropic_defusion(random,20,0.99*1);
+y_bilateral_u = bilateral(random,5,10);
+
+y_osf_n = median_filter(random, radius_n);
+y_aheat_n = Anisotropic_defusion(random,20,0.99*5);
+y_bilateral_n = bilateral(random,5,15);
+
+y_osf_o = median_filter(random, radius_o);
+y_aheat_o = Anisotropic_defusion(random,20,0.99*10);
+y_bilateral_o = bilateral(random,5,22);
+    
+    subplot(3,3,1);
+    plotimage(y_osf_u, [0 255]);
+    title('Under_smooth Median Filtered Magnitude image');
+    subplot(3,3,2);
+    plotimage(y_aheat_u, [0 255]);
+    title('Under_smooth Anisotropic Diffusio Filteredn Magnitude image');
+    subplot(3,3,3);
+    plotimage(y_bilateral_u, [0 255]);
+    title('Under_smooth Bilateral Fitered Magnitude image');
+    
+    
+    
+    subplot(3,3,4);
+    plotimage(y_osf_n, [0 255]);
+    title('Mid_smooth Median Filtered Magnitude image');
+    subplot(3,3,5);
+    plotimage(y_aheat_n, [0 255]);
+    title('Mid_smooth Anisotropic Diffusion Filtered Magnitude image');
+    subplot(3,3,6);
+    plotimage(y_bilateral_n, [0 255]);
+    title('Mid_smooth Bilateral Fitered Mag image');
+    
+    
+    
+    subplot(3,3,7);
+    plotimage(y_osf_o, [0 255]);
+    title('Over_smooth Median Filtered  image');
+    subplot(3,3,8);
+    plotimage(y_aheat_o, [0 255]);
+    title('Over_smooth Anisotropic diffusion Filtered  image');
+    subplot(3,3,9);
+    plotimage(y_bilateral_o, [0 255]);
+    title('Over_smooth Bilateral Fitered Mag image');
+    drawnow
+   % pause(0.01);
+    linkaxes
+    
+    
+% Display data
+fancyfigure;
+    subplot(1,2,1);
+    plotimage(random, [0 255]);
+    title('x-Un-noise image');
+    subplot(1,2,2);
+    plotimage(y_noise, [0 255]);
+    title('y-Noise added image');
+    
+  
+ 
+  
+  
+  
+  
+  diff_y_osf_u = abs(y_osf_u - random);
+  diff_y_aheat_u = abs(y_aheat_u - random);
+  diff_y_bilateral_u = abs(y_bilateral_u - random);
+  
+  diff_y_osf_n = abs(y_osf_n - random);
+  diff_y_aheat_n = abs(y_aheat_n - random);
+  diff_y_bilateral_n = abs(y_bilateral_n - random);
+  
+  diff_y_osf_o = abs(y_osf_o - random);
+  diff_y_aheat_o = abs(y_aheat_o - random);
+  diff_y_bilateral_o = abs(y_bilateral_o - random);
+  
+  
+  
+  s1_u = sqrt( sum(sum( (diff_y_osf_u).^2) ) );
+  s2_u = sqrt( sum(sum( (diff_y_aheat_u).^2) ) );
+  s3_u = sqrt( sum(sum( (diff_y_bilateral_u).^2) ) );
+  
+  s1_n = sqrt( sum(sum( (diff_y_osf_n).^2) ) );
+  s2_n = sqrt( sum(sum( (diff_y_aheat_n).^2) ) );
+  s3_n = sqrt( sum(sum( (diff_y_bilateral_n).^2) ) );
+  
+   s1_o = sqrt( sum(sum( (diff_y_osf_o).^2) ) );
+  s2_o = sqrt( sum(sum( (diff_y_aheat_o).^2) ) );
+  s3_o = sqrt( sum(sum( (diff_y_bilateral_o).^2) ) );
+  
+  
+  fancyfigure;  
+  subplot(3,3,1);
+    plotimage(diff_y_osf_u, [0 40]);
+    title('Under_smooth Median Filtered Magnitude image');
+    subplot(3,3,2);
+    plotimage(diff_y_aheat_u, [0 40]);
+    title('Under_smooth Anisotropic Diffusion Filtered Magnitude image');
+    subplot(3,3,3);
+    plotimage(diff_y_bilateral_u, [0 40]);
+    title('Under_smooth Bilateral Fitered Magnitude image');
+    
+    
+    
+    subplot(3,3,4);
+    plotimage(diff_y_osf_n, [0 40]);
+    title('Mid_smooth Median Filtered Magnitude image');
+    subplot(3,3,5);
+    plotimage(diff_y_aheat_n, [0 40]);
+    title('Mid_smooth Anisotropic diffusion Filtered Magnitude image');
+    subplot(3,3,6);
+    plotimage(diff_y_bilateral_n, [0 40]);
+    title('Mid_smooth Bilateral fitered Mag image');
+    
+    
+    
+    subplot(3,3,7);
+    plotimage(diff_y_osf_o, [0 40]);
+    title('Over_smooth Median Filtered  image');
+    subplot(3,3,8);
+    plotimage(diff_y_aheat_o, [0 40]);
+    title('Over_smooth Anisotropic Diffusion Filtered  image');
+    subplot(3,3,9);
+    plotimage(diff_y_bilateral_o, [0 40]);
+    title('Over_smooth Bilateral Fitered Mag image');
+     linkaxes
+  
